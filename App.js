@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -20,7 +20,12 @@ import {WebView} from 'react-native-webview';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 import store from './src/redux/configureStore';
-import {setTDXToken, getTaipeiList} from './src/redux/apis/cctv';
+import {
+  setTDXToken,
+  getTaipeiList,
+  getCityList,
+  getCCTVList,
+} from './src/redux/apis/cctv';
 import cctvSlice from './src/redux/slices/cctv';
 
 const Stack = createNativeStackNavigator();
@@ -69,15 +74,34 @@ const CctvScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const streams = useSelector(state => state.cctv.streams);
+  const citys = useSelector(state => state.cctv.citys);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     flex: 1,
   };
 
+  useEffect(() => {
+    getCityList().then(ans => dispatch(cctvSlice.actions.setCitys(ans)));
+  }, [dispatch]);
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <ScrollView horizontal style={{flexGrow: 0}}>
+        {citys.map(city => (
+          <TouchableOpacity
+            key={city.code}
+            onPress={() => {
+              getCCTVList(city.code)
+                .then(res => res.json())
+                .then(ans => dispatch(cctvSlice.actions.setStreams(ans.CCTVs)));
+            }}
+            style={{backgroundColor: 'black', margin: 10}}>
+            <Text style={{color: 'white'}}>{city.name}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>

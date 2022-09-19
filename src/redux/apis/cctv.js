@@ -44,3 +44,71 @@ export const getTaipeiList = async () => {
     },
   );
 };
+
+export const getCityList = () => {
+  return new Promise(resolve => {
+    const citys = [
+      {
+        code: 'Taipei',
+        name: '台北',
+      },
+      {
+        code: 'NewTaipei',
+        name: '新北',
+      },
+      {
+        code: 'YilanCounty',
+        name: '宜蘭',
+      },
+      {
+        code: 'ChanghuaCounty',
+        name: '彰化',
+      },
+      {
+        code: 'YunlinCounty',
+        name: '雲林',
+      },
+      {
+        code: 'PingtungCounty',
+        name: '屏東',
+      },
+      {
+        code: 'TaitungCounty',
+        name: '台東',
+      },
+      {
+        code: 'Keelung',
+        name: '基隆',
+      },
+      {
+        code: 'Taichung',
+        name: '台中',
+      },
+      {
+        code: 'Tainan',
+        name: '台南',
+      },
+      {
+        code: 'Taoyuan',
+        name: '桃園',
+      },
+    ];
+
+    resolve(citys);
+  });
+};
+
+export const getCCTVList = async city => {
+  const token = await getAccessToken();
+  const headers = new Headers({
+    accept: 'application/json',
+    Authorization: 'Bearer ' + token,
+  });
+  return fetch(
+    `https://tdx.transportdata.tw/api/basic/v2/Road/Traffic/CCTV/City/${city}?%24top=30&%24format=JSON`,
+    {
+      method: 'GET',
+      headers,
+    },
+  );
+};
