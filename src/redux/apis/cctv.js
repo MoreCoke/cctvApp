@@ -112,3 +112,35 @@ export const getCCTVList = async city => {
     },
   );
 };
+
+// 發現差不多過 15 秒會有白屏的問題
+export const getFreeCCTVList = async () => {
+  const token = await getAccessToken();
+  const headers = new Headers({
+    accept: 'application/json',
+    Authorization: 'Bearer ' + token,
+  });
+  return fetch(
+    'https://tdx.transportdata.tw/api/basic/v2/Road/Traffic/CCTV/Freeway?%24top=30&%24format=JSON',
+    {
+      method: 'GET',
+      headers,
+    },
+  );
+};
+
+// 發現差不多過 15 秒會有白屏的問題
+export const getHighwayCCTVList = async () => {
+  const token = await getAccessToken();
+  const headers = new Headers({
+    accept: 'application/json',
+    Authorization: 'Bearer ' + token,
+  });
+  return fetch(
+    'https://tdx.transportdata.tw/api/basic/v2/Road/Traffic/CCTV/Highway?%24top=30&%24format=JSON',
+    {
+      method: 'GET',
+      headers,
+    },
+  );
+};

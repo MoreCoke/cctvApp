@@ -25,6 +25,8 @@ import {
   getTaipeiList,
   getCityList,
   getCCTVList,
+  getFreeCCTVList,
+  getHighwayCCTVList,
 } from './src/redux/apis/cctv';
 import cctvSlice from './src/redux/slices/cctv';
 
@@ -119,6 +121,22 @@ const CctvScreen = () => {
               .catch(err => console.log('error: ', err));
           }}>
           <Text>log cctv list</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            getFreeCCTVList()
+              .then(res => res.json())
+              .then(ans => dispatch(cctvSlice.actions.setStreams(ans.CCTVs)));
+          }}>
+          <Text>log freeway list</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            getHighwayCCTVList()
+              .then(res => res.json())
+              .then(ans => dispatch(cctvSlice.actions.setStreams(ans.CCTVs)));
+          }}>
+          <Text>log highway list</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Test')}>
           <Text>go test screen</Text>
