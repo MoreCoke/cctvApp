@@ -5,43 +5,36 @@ import {
   setAccessToken,
   removeAccessToken,
 } from '../../utils/keychain';
+import http from './http';
 
-const _header = new Headers({
-  'Content-Type': 'application/x-www-form-urlencoded',
-});
-
-const _body = new URLSearchParams();
-
-_body.append('grant_type', 'client_credentials');
-_body.append('client_id', Config.CLIENT_ID);
-_body.append('client_secret', Config.CLIENT_SECRET);
+const _tokenTeader = async () => {
+  const token = await getAccessToken();
+  return {
+    Authorization: 'Bearer ' + token,
+  };
+};
 
 export const setTDXToken = async () => {
   await removeAccessToken();
-  return fetch(
-    'https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token',
-    {
-      headers: _header,
-      body: _body,
-      method: 'POST',
-    },
-  )
+  const body = {
+    grant_type: 'client_credentials',
+    client_id: Config.CLIENT_ID,
+    client_secret: Config.CLIENT_SECRET,
+  };
+  return http
+    .post('auth/realms/TDXConnect/protocol/openid-connect/token', body)
     .then(res => res.json())
     .then(ans => setAccessToken(ans.access_token));
 };
 
 export const getTaipeiList = async () => {
-  const token = await getAccessToken();
-  const headers = new Headers({
-    accept: 'application/json',
-    Authorization: 'Bearer ' + token,
-  });
-  return fetch(
-    'https://tdx.transportdata.tw/api/basic/v2/Road/Traffic/CCTV/City/NewTaipei?%24top=30',
+  const headers = await _tokenTeader();
+  return http.get(
+    'api/basic/v2/Road/Traffic/CCTV/City/NewTaipei',
     {
-      method: 'GET',
-      headers,
+      $top: 30,
     },
+    headers,
   );
 };
 
@@ -99,48 +92,39 @@ export const getCityList = () => {
 };
 
 export const getCCTVList = async city => {
-  const token = await getAccessToken();
-  const headers = new Headers({
-    accept: 'application/json',
-    Authorization: 'Bearer ' + token,
-  });
-  return fetch(
-    `https://tdx.transportdata.tw/api/basic/v2/Road/Traffic/CCTV/City/${city}?%24top=30&%24format=JSON`,
+  const headers = await _tokenTeader();
+  return http.get(
+    `api/basic/v2/Road/Traffic/CCTV/City/${city}`,
     {
-      method: 'GET',
-      headers,
+      $top: 30,
+      $format: 'JSON',
     },
+    headers,
   );
 };
 
 // 發現差不多過 15 秒會有白屏的問題
 export const getFreeCCTVList = async () => {
-  const token = await getAccessToken();
-  const headers = new Headers({
-    accept: 'application/json',
-    Authorization: 'Bearer ' + token,
-  });
-  return fetch(
-    'https://tdx.transportdata.tw/api/basic/v2/Road/Traffic/CCTV/Freeway?%24top=30&%24format=JSON',
+  const headers = await _tokenTeader();
+  return http.get(
+    'api/basic/v2/Road/Traffic/CCTV/Freeway',
     {
-      method: 'GET',
-      headers,
+      $top: 30,
+      $format: 'JSON',
     },
+    headers,
   );
 };
 
 // 發現差不多過 15 秒會有白屏的問題
 export const getHighwayCCTVList = async () => {
-  const token = await getAccessToken();
-  const headers = new Headers({
-    accept: 'application/json',
-    Authorization: 'Bearer ' + token,
-  });
-  return fetch(
-    'https://tdx.transportdata.tw/api/basic/v2/Road/Traffic/CCTV/Highway?%24top=30&%24format=JSON',
+  const headers = await _tokenTeader();
+  return http.get(
+    'api/basic/v2/Road/Traffic/CCTV/Highway',
     {
-      method: 'GET',
-      headers,
+      $top: 30,
+      $format: 'JSON',
     },
+    headers,
   );
 };
